@@ -30,10 +30,7 @@ import {
   Detector,
   DetectorSync,
   detectResourcesSync,
-  envDetector,
-  hostDetector,
   IResource,
-  processDetector,
   Resource,
   ResourceDetectionConfig,
 } from '@opentelemetry/resources';
@@ -51,7 +48,7 @@ import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { NodeSDKConfiguration } from './types';
 import { TracerProviderWithEnvExporters } from './TracerProviderWithEnvExporter';
 import { getEnv, getEnvWithoutDefaults } from '@opentelemetry/core';
-import { getResourceDetectorsFromEnv } from './utils';
+import { getDefaultResourceDetectors } from './utils';
 
 /** This class represents everything needed to register a fully configured OpenTelemetry Node.js SDK */
 
@@ -121,15 +118,9 @@ export class NodeSDK {
     this._configuration = configuration;
 
     this._resource = configuration.resource ?? new Resource({});
-    let defaultDetectors: (Detector | DetectorSync)[] = [];
-    if (process.env.OTEL_NODE_RESOURCE_DETECTORS != null) {
-      defaultDetectors = getResourceDetectorsFromEnv();
-    } else {
-      defaultDetectors = [envDetector, processDetector, hostDetector];
-    }
 
     this._resourceDetectors =
-      configuration.resourceDetectors ?? defaultDetectors;
+      configuration.resourceDetectors ?? getDefaultResourceDetectors();
 
     this._serviceName = configuration.serviceName;
 

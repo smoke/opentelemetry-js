@@ -16,10 +16,14 @@
 
 import { diag } from '@opentelemetry/api';
 import {
+  Detector,
   DetectorSync,
+  envDetector,
   envDetectorSync,
+  hostDetector,
   hostDetectorSync,
   osDetectorSync,
+  processDetector,
   processDetectorSync,
   serviceInstanceIdDetectorSync,
 } from '@opentelemetry/resources';
@@ -60,4 +64,14 @@ export function getResourceDetectorsFromEnv(): Array<DetectorSync> {
     }
     return resourceDetector || [];
   });
+}
+
+export function getDefaultResourceDetectors(): (Detector | DetectorSync)[] {
+  let defaultDetectors: (Detector | DetectorSync)[] = [];
+  if (process.env.OTEL_NODE_RESOURCE_DETECTORS != null) {
+    defaultDetectors = getResourceDetectorsFromEnv();
+  } else {
+    defaultDetectors = [envDetector, processDetector, hostDetector];
+  }
+  return defaultDetectors;
 }

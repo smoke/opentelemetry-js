@@ -18,6 +18,7 @@ import { envDetector, IResource } from '../../../src';
 import {
   assertK8sResource,
   assertEmptyResource,
+  assertServiceResource,
 } from '../../util/resource-assertions';
 import { describeNode } from '../../util';
 
@@ -39,6 +40,26 @@ describeNode('envDetector() on Node.js', () => {
         clusterName: 'c1',
         namespaceName: 'default',
         deploymentName: 'deployment name',
+      });
+    });
+
+    describe('and valid OTEL_SERVICE_NAME and OTEL_SERVICE_VERSION', () => {
+      before(() => {
+        process.env.OTEL_SERVICE_NAME = 'some-service-name';
+        process.env.OTEL_SERVICE_VERSION = 'some-service-version';
+      });
+
+      after(() => {
+        delete process.env.OTEL_SERVICE_NAME;
+        delete process.env.OTEL_SERVICE_VERSION;
+      });
+
+      it('should return service.name and service.version resource information from environment variables', async () => {
+        const resource: IResource = await envDetector.detect();
+        assertServiceResource(resource, {
+          name: 'some-service-name',
+          version: 'some-service-version',
+        });
       });
     });
   });

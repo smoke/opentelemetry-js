@@ -16,7 +16,10 @@
 
 import { diag } from '@opentelemetry/api';
 import { getEnv } from '@opentelemetry/core';
-import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+import {
+  SEMRESATTRS_SERVICE_NAME,
+  SEMRESATTRS_SERVICE_VERSION,
+} from '@opentelemetry/semantic-conventions';
 import { Resource } from '../Resource';
 import { DetectorSync, ResourceAttributes } from '../types';
 import { ResourceDetectionConfig } from '../config';
@@ -59,6 +62,7 @@ class EnvDetectorSync implements DetectorSync {
 
     const rawAttributes = env.OTEL_RESOURCE_ATTRIBUTES;
     const serviceName = env.OTEL_SERVICE_NAME;
+    const serviceVersion = env.OTEL_SERVICE_VERSION;
 
     if (rawAttributes) {
       try {
@@ -71,6 +75,10 @@ class EnvDetectorSync implements DetectorSync {
 
     if (serviceName) {
       attributes[SEMRESATTRS_SERVICE_NAME] = serviceName;
+    }
+
+    if (serviceVersion) {
+      attributes[SEMRESATTRS_SERVICE_VERSION] = serviceVersion;
     }
 
     return new Resource(attributes);

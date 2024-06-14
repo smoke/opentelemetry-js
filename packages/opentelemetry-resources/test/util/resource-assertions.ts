@@ -271,7 +271,7 @@ export const assertServiceResource = (
   resource: IResource,
   validations: {
     name: string;
-    instanceId: string;
+    instanceId?: string;
     namespace?: string;
     version?: string;
   }
@@ -280,10 +280,12 @@ export const assertServiceResource = (
     resource.attributes[SEMRESATTRS_SERVICE_NAME],
     validations.name
   );
-  assert.strictEqual(
-    resource.attributes[SEMRESATTRS_SERVICE_INSTANCE_ID],
-    validations.instanceId
-  );
+  if (validations.instanceId) {
+    assert.strictEqual(
+      resource.attributes[SEMRESATTRS_SERVICE_INSTANCE_ID],
+      validations.instanceId
+    );
+  }
   if (validations.namespace)
     assert.strictEqual(
       resource.attributes[SEMRESATTRS_SERVICE_NAMESPACE],
